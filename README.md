@@ -9,8 +9,7 @@ El Mlx90614 es un sensor piroelectrico que consta de 3 partes:
 - Una termopila que genera un voltaje el cual es proporcional a la potencia de la radiacion infrarroja incidente desde el objeto.
 - Un termistor que se emplea para la compensacion de la temperatura ambiente.
 
-A continuacion les dejamos el link a un video que explica en profundidad como funciona el sensor:
-https://youtu.be/uA3JK2_dL7o?si=DxVFuG80dL7nquLk
+A continuacion les dejamos el link a un video que explica en profundidad como funciona el sensor:  https://youtu.be/uA3JK2_dL7o?si=DxVFuG80dL7nquLk
 
 ### Esp32
 EL microcontrolador que usaremos ser el Esp32 y lo programaremos usando micropython.
