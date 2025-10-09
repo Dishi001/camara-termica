@@ -20,5 +20,5 @@ EL microcontrolador que usamos sera el Arduino Nano, lo programamos usando C++ e
 ![Microcontrolador](Imagenes/Arduino_Nano.png)
 
 ## Circuito propuesto:
-![Circuito](Imagenes/Schematic.png)
+![Circuito](Imagenes/schematic.png)
 
