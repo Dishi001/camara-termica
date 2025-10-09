@@ -14,8 +14,8 @@ El Mlx90614 es un sensor piroelectrico que consta de 3 partes:
 A continuacion les dejamos el link a un video que explica en profundidad como funciona el sensor:  
 https://youtu.be/uA3JK2_dL7o?si=DxVFuG80dL7nquLk
 
-### Esp32
-EL microcontrolador que usaremos ser el Esp32 y lo programaremos usando micropython.
+### Arduino Nano
+EL microcontrolador que usaremos sera el Arduino Nano, lo programaremos usando C y implementaremos un script de Python para generar la imagen termica.
 
-![Microcontrolador](Imagenes/esp32.png)
+![Microcontrolador](Imagenes/Arduino_Nano.png)
 
