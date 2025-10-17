@@ -1,49 +1,62 @@
 import serial
-import matplotlib.pyplot as plt
 import numpy as np
-from scipy.ndimage import zoom
+import matplotlib.pyplot as plt
+from matplotlib.animation import FuncAnimation
 
-# Configuración del puerto
-puerto = 'COM4'
-baudrate = 9600
-arduino = serial.Serial(puerto, baudrate, timeout=5)
+# Configuración del puerto serial
+ser = serial.Serial('COM7', 115200, timeout=1)  # Cambia 'COM4' según tu PC
+rows, cols = 24, 32
 
-cols = 180  # número de pasos del servo (0.5° por paso)
-rows = 150  # resolución vertical deseada
-temperaturas = np.zeros(cols)
-
-plt.ion()
+# Crear figura y eje
 fig, ax = plt.subplots()
-mapa = ax.imshow(np.zeros((rows, cols)), cmap='plasma', interpolation='bicubic')
-cbar = plt.colorbar(mapa)
-cbar.set_label("Temperatura (°C)")
-ax.set_title("Mapa térmico cuadrado un solo servo")
+frame = np.zeros((rows, cols))
+im = ax.imshow(frame, cmap='inferno', vmin=20, vmax=40)
+cbar = plt.colorbar(im, ax=ax)
+cbar.set_label('Temperatura (°C)')
+title_text = ax.set_title('Cámara Térmica MLX90640')
+temp_text = ax.text(0.02, 0.95, '', transform=ax.transAxes, color='white', fontsize=10,
+                    bbox=dict(facecolor='black', alpha=0.5))
 
+def leer_frame():
+    """Lee un frame completo desde la ESP"""
+    frame = []
+    while True:
+        try:
+            line = ser.readline().decode('utf-8', errors='ignore').strip()
+        except:
+            continue
+        if line == "":
+            continue
+        if line.startswith("==="):  # fin del frame
+            break
+        valores = [float(x) for x in line.split()]
+        if len(valores) == cols:
+            frame.append(valores)
+    return np.array(frame)
+
+def actualizar(frame_num):
+    """Función de animación para actualizar la imagen"""
+    global frame
+    try:
+        frame = leer_frame()
+        if frame.shape == (rows, cols):
+            im.set_data(frame)
+            # Actualizar el texto con temperaturas
+            temp_max = np.max(frame)
+            temp_min = np.min(frame)
+            temp_avg = np.mean(frame)
+            temp_text.set_text(f'Max: {temp_max:.1f}°C  Min: {temp_min:.1f}°C  Avg: {temp_avg:.1f}°C')
+    except Exception as e:
+        print("Error:", e)
+
+# Animación con actualización cada 100 ms y cache deshabilitado (sin warnings)
+ani = FuncAnimation(fig, actualizar, interval=100, cache_frame_data=False)
+plt.show()
+
+# Mantener el puerto abierto hasta Ctrl+C
 try:
     while True:
-        # Leer todas las temperaturas del barrido horizontal
-        for i in range(cols):
-            linea = arduino.readline().decode('utf-8').strip()
-            if linea and linea != "---Escaneo---":
-                temperaturas[i] = float(linea)
-
-        # Crear matriz cuadrada repitiendo verticalmente
-        matriz = np.tile(temperaturas, (rows,1))
-        matriz_suave = zoom(matriz, (1,1), order=3)
-
-        t_min = np.nanmin(matriz_suave)
-        t_max = np.nanmax(matriz_suave)
-        rango = t_max - t_min
-        vmin = t_min - 0.2*rango
-        vmax = t_max + 0.2*rango
-
-        mapa.set_data(matriz_suave)
-        mapa.set_clim(vmin, vmax)
-        plt.draw()
-        plt.pause(0.01)
-
-        arduino.readline()
-
+        pass
 except KeyboardInterrupt:
-    print("Visualización detenida.")
-    arduino.close()
+    ser.close()
+    print("Programa terminado.")

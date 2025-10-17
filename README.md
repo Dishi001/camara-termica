@@ -17,5 +17,5 @@ https://youtu.be/uA3JK2_dL7o?si=DxVFuG80dL7nquLk
 ### Arduino Nano
 EL microcontrolador que usaremos sera el Arduino Nano, lo programaremos usando C y implementaremos un script de Python para generar la imagen termica.
 
-![Microcontrolador](Imagenes/Arduino_Nano.png)
+![Microcontrolador](Imagenes/ESP8266-Pinout.png)
 
