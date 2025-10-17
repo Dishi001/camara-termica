@@ -1,39 +1,43 @@
-import serial
-import numpy as np
-import matplotlib.pyplot as plt
-import time
+#include <Wire.h>
+ #include <Adafruit_MLX90640.h> 
+ 
+ Adafruit_MLX90640 mlx; 
+ float frame[32*24]; 
 
-# Configuración del puerto serial
-ser = serial.Serial('COM4', 115200, timeout=1)  # Cambia 'COM4' por tu puerto
-
-# Tamaño de la matriz del MLX90640
-rows = 24
-cols = 32
-
-def leer_frame():
-    """Lee un frame completo desde la ESP"""
-    frame = []
-    while True:
-        line = ser.readline().decode('utf-8').strip()
-        if line.startswith("Frame recibido") or line == "":
-            continue
-        if line.startswith("==="):  # Fin del frame
-            break
-        # Convierte la fila en floats
-        valores = [float(x) for x in line.split()]
-        if len(valores) == cols:
-            frame.append(valores)
-    return np.array(frame)
-
-def mostrar_imagen(frame):
-    """Muestra la matriz como imagen térmica"""
-    plt.imshow(frame, cmap='inferno')  # 'inferno' es un buen colormap térmico
-    plt.colorbar(label='Temperatura (°C)')
-    plt.title('Imagen Térmica MLX90640')
-    plt.show()
-
-# Loop principal
-try:
-    while True:
-        frame = leer_frame()
-        if frame.shape == (rows, co
+ void setup() { Serial.begin(115200);
+  while(!Serial) delay(10); 
+  Serial.println("Iniciando..."); 
+  
+  Wire.begin(4, 5);
+  Wire.setClock(400000);
+  
+  if(!mlx.begin(MLX90640_I2CADDR_DEFAULT, &Wire)) {
+     Serial.println("MLX90640 no encontrado!"); 
+     while(1) delay(10); 
+     } 
+  
+    Serial.println("MLX90640 detectado!"); 
+    mlx.setMode(MLX90640_CHESS);
+    mlx.setResolution(MLX90640_ADC_18BIT);
+    mlx.setRefreshRate(MLX90640_2_HZ); 
+  } 
+  
+  void loop() { 
+    if(mlx.getFrame(frame) != 0)
+     { Serial.println("Error leyendo frame");
+      delay(500); 
+      return; 
+      } 
+    
+    // Imprimir matriz 32x24 solo con números 
+    for(uint8_t h=0; h<24; h++) { 
+      for(uint8_t w=0; w<32; w++) { 
+        Serial.print(frame[h*32 + w], 1); // un decimal 
+        Serial.print(" "); // separa con espacio 
+      } 
+      Serial.println(); // nueva línea por cada fila 
+    } 
+    
+    Serial.println("==="); // indica fin de frame 
+    delay(500); // medio segundo entre frames 
+  }

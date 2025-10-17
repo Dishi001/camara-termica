@@ -4,16 +4,10 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from scipy.ndimage import zoom
 
-# -----------------------------
-# Configuración Serial
-# -----------------------------
 ser = serial.Serial('COM7', 500000, timeout=0.01)
 rows, cols = 24, 32
 amplificar = 8  # Ampliación visual
 
-# -----------------------------
-# Función para leer frame desde Arduino
-# -----------------------------
 def leer_frame():
     datos = np.zeros((rows, cols), dtype=float)
     fila = 0
@@ -29,9 +23,7 @@ def leer_frame():
             continue
     return datos
 
-# -----------------------------
-# Inicializar frames y velocidad
-# -----------------------------
+
 frame_actual = leer_frame()
 frame_siguiente = leer_frame()
 velocidad = frame_siguiente - frame_actual
@@ -40,9 +32,6 @@ alpha = 0.0
 # 16 FPS reales, queremos 40 FPS percibidos → delta_alpha = 16 / 40
 delta_alpha = 16 / 40
 
-# -----------------------------
-# Configurar figura
-# -----------------------------
 fig, ax = plt.subplots()
 frame_ampliado = zoom(frame_actual, (amplificar, amplificar))
 im = ax.imshow(frame_ampliado, cmap='inferno', vmin=20, vmax=40, interpolation='bicubic')
@@ -53,43 +42,29 @@ title_text = ax.set_title('Cámara Térmica MLX90640 - Ultra Realista 40 FPS')
 temp_text = ax.text(0.02, 0.95, '', transform=ax.transAxes, color='white', fontsize=10,
                     bbox=dict(facecolor='black', alpha=0.5))
 
-# -----------------------------
-# Función de actualización de animación
-# -----------------------------
+
 def actualizar(frame_num):
     global frame_actual, frame_siguiente, velocidad, alpha, frame_ampliado
 
-    # Predicción adaptativa por pixel
     frame_predicho = frame_actual + alpha * velocidad
 
-    # Ampliar x8 y suavizado bicúbico
     frame_ampliado = zoom(frame_predicho, (amplificar, amplificar))
     im.set_data(frame_ampliado)
 
-    # Mostrar temperaturas
     temp_text.set_text(f'Max: {np.max(frame_predicho):.1f}°C  Min: {np.min(frame_predicho):.1f}°C  Avg: {np.mean(frame_predicho):.1f}°C')
 
-    # Avanzar interpolación
     alpha += delta_alpha
     if alpha >= 1.0:
-        # Llegó nuevo frame real
         frame_actual = frame_siguiente.copy()
         frame_siguiente = leer_frame()
-        # Recalcular velocidad por pixel
         velocidad = frame_siguiente - frame_actual
         alpha = 0.0
 
     return im, temp_text
 
-# -----------------------------
-# Animación ~40 FPS
-# -----------------------------
 ani = FuncAnimation(fig, actualizar, interval=25, blit=False)  # 1000ms/40FPS ≈ 25ms
 plt.show()
 
-# -----------------------------
-# Mantener puerto abierto hasta Ctrl+C
-# -----------------------------
 try:
     while True:
         pass
