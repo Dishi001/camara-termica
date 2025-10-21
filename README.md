@@ -9,7 +9,7 @@ El Mlx90640 es un sensor de radiación que consta de 3 partes:
 - Una termopila que genera un voltaje el cual es proporcional a la potencia de la radiación infrarroja incidente desde el objeto.
 - Un termistor que se emplea para la compensación de la temperatura ambiente.
 
-![Sensor](Imagenes/MLX90640.png)
+![Sensor](Imagenes/MLX90640.jpg)
 
 A continuación les dejamos el link a un video que explica en profundidad como funciona el sensor:  
 https://youtu.be/uA3JK2_dL7o?si=DxVFuG80dL7nquLk
