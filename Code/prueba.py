@@ -29,7 +29,6 @@ frame_siguiente = leer_frame()
 velocidad = frame_siguiente - frame_actual
 
 alpha = 0.0
-# 16 FPS reales, queremos 40 FPS percibidos → delta_alpha = 16 / 40
 delta_alpha = 16 / 40
 
 fig, ax = plt.subplots()
@@ -38,7 +37,7 @@ im = ax.imshow(frame_ampliado, cmap='inferno', vmin=20, vmax=40, interpolation='
 cbar = plt.colorbar(im, ax=ax)
 cbar.set_label('Temperatura (°C)')
 
-title_text = ax.set_title('Cámara Térmica MLX90640 - Ultra Realista 40 FPS')
+title_text = ax.set_title('Cámara Térmica MLX90640')
 temp_text = ax.text(0.02, 0.95, '', transform=ax.transAxes, color='white', fontsize=10,
                     bbox=dict(facecolor='black', alpha=0.5))
 
@@ -62,7 +61,7 @@ def actualizar(frame_num):
 
     return im, temp_text
 
-ani = FuncAnimation(fig, actualizar, interval=25, blit=False)  # 1000ms/40FPS ≈ 25ms
+ani = FuncAnimation(fig, actualizar, interval=25, blit=False)
 plt.show()
 
 try:

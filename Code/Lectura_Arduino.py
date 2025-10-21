@@ -11,7 +11,7 @@ amplificar = 4
 frame_actual = np.zeros((rows, cols))
 frame_siguiente = np.zeros((rows, cols))
 alpha = 0.0 
-delta_alpha = 1/6  # 16 FPS → 1/6 ≈ avance por frame ~90 FPS
+delta_alpha = 1/6 
 
 fig, ax = plt.subplots()
 frame_ampliado = zoom(frame_actual, (amplificar, amplificar))
